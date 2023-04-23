@@ -1,0 +1,187 @@
+<!--
+ Copyright (C) 2023 antoine
+ 
+ This file is part of PiKey-blocks.
+ 
+ PiKey-blocks is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 3 of the License, or
+ (at your option) any later version.
+ 
+ PiKey-blocks is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+ 
+ You should have received a copy of the GNU General Public License
+ along with PiKey-blocks.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PiKey Blocks</title>
+    <script src="https://unpkg.com/blockly/blockly.min.js"></script>
+</head>
+<style>
+    :root {
+        padding: 0;
+        margin: 0;
+    }
+
+    table {
+        height: calc(100vh - 1.25rem);
+        width: calc(100vw - 1.25rem);
+        margin-top: 0.25rem;
+        margin-left: 0.25rem;
+    }
+
+    button {
+        position: absolute;
+        right: 0.63rem;
+        top: 0.63rem;
+        border: thin solid black;
+        border-radius: 0;
+        border-bottom-left-radius: 0.5rem;
+        background: white;
+        height: 2.5rem;
+        width: 10rem;
+        z-index: 10;
+        cursor: pointer;
+        outline: thin solid white;
+        outline-offset: -0.1rem;
+        transition: 0.25s cubic-bezier(0.6, 0.04, 0.98, 0.335);
+    }
+
+    button:hover {
+        background: black;
+        outline-offset: -0.5rem;
+        color: white;
+        font-weight: bolder;
+    }
+
+    .blocklyMainBackground {
+        stroke-width: 1;
+        stroke: black;
+    }
+</style>
+
+<body>
+    <button>Export</button>
+    <table>
+        <tr>
+            <td id="blocklyArea">
+            </td>
+        </tr>
+    </table>
+
+    <div id="blocklyDiv" style="position: absolute"></div>
+
+    <script defer>
+        const blocklyArea = document.getElementById('blocklyArea');
+        const blocklyDiv = document.getElementById('blocklyDiv');
+        var toolbox = `
+            <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none;">
+                <block type="duckyscript_delay"></block>
+                <block type="duckyscript_string"></block>
+            </xml>
+        `;
+
+        Blockly.defineBlocksWithJsonArray([
+            {
+                "type": "category_duckyscript",
+                "message0": "DuckyScript",
+                "colour": 160,
+                "nextStatement": null,
+                "tooltip": "Category for DuckyScript commands",
+                "helpUrl": "https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference"
+            },
+            {
+                "type": "duckyscript_delay",
+                "message0": "DELAY %1",
+                "args0": [
+                    {
+                        "type": "field_number",
+                        "name": "DELAY_TIME",
+                        "value": 1000,
+                        "min": 0,
+                        "precision": 1
+                    }
+                ],
+                "previousStatement": null,
+                "nextStatement": null,
+                "colour": 230,
+                "tooltip": "Delay for a specified amount of time (in milliseconds)",
+                "helpUrl": "https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference#delay"
+            },
+            {
+                "type": "duckyscript_string",
+                "message0": "STRING %1",
+                "args0": [
+                    {
+                        "type": "field_input",
+                        "name": "STRING_TEXT",
+                        "text": ""
+                    }
+                ],
+                "previousStatement": null,
+                "nextStatement": null,
+                "colour": 230,
+                "tooltip": "Type a string of text",
+                "helpUrl": "https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference#string"
+            }
+        ]);
+
+        Blockly.DuckyScript = {};
+        Blockly.DuckyScript['duckyscript_delay'] = function (block) {
+            var delayTime = block.getFieldValue('DELAY_TIME');
+            return 'DELAY ' + delayTime + ';\n';
+        };
+
+        Blockly.DuckyScript['duckyscript_string'] = function (block) {
+            var stringText = block.getFieldValue('STRING_TEXT');
+            return 'STRING ' + stringText + ';\n';
+        };
+
+        Blockly.JavaScript['category_duckyscript'] = Blockly.DuckyScript['category_duckyscript'];
+        Blockly.JavaScript['duckyscript_delay'] = Blockly.DuckyScript['duckyscript_delay'];
+        Blockly.JavaScript['duckyscript_string'] = Blockly.DuckyScript['duckyscript_string'];
+
+        const workspace = Blockly.inject(blocklyDiv,
+            { toolbox: toolbox });
+        const onresize = function (e) {
+            let element = blocklyArea;
+            let x = 0;
+            let y = 0;
+            do {
+                x += element.offsetLeft;
+                y += element.offsetTop;
+                element = element.offsetParent;
+            } while (element);
+            blocklyDiv.style.left = x + 'px';
+            blocklyDiv.style.top = y + 'px';
+            blocklyDiv.style.width = blocklyArea.offsetWidth + 'px';
+            blocklyDiv.style.height = blocklyArea.offsetHeight + 'px';
+            Blockly.svgResize(workspace);
+        };
+        window.addEventListener('resize', onresize, false);
+        onresize();
+
+
+        var startBlocks = {
+            "blocks": {
+                "languageVersion": 0,
+                "blocks": [
+                ]
+            }
+        }
+        Blockly.serialization.workspaces.load(startBlocks, workspace);
+    </script>
+
+</body>
+
+</html>
