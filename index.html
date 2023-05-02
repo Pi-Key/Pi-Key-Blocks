@@ -86,190 +86,221 @@
         const blocklyArea = document.getElementById('blocklyArea');
         const blocklyDiv = document.getElementById('blocklyDiv');
         var toolbox = `
-            <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none;">
-                <block type="duckyscript_payload"></block>
-                <block type="duckyscript_rem"></block>
-                <block type="duckyscript_delay"></block>
-                <block type="duckyscript_string"></block>
-                <block type="duckyscript_modifier"></block>
-                <block type="duckyscript_key"></block>
-                <block type="duckyscript_f_key"></block>
-            </xml>
+        <xml xmlns="https://developers.google.com/blockly/xml">
+            <category name="DuckyScript" colour="#5C81A6">
+                <block type="type_string"></block>
+                <block type="delay"></block>
+                <block type="repeat"></block>
+                <block type="press_key"></block>
+                <block type="command_separator"></block>
+            </category>
+        </xml>
         `;
 
         Blockly.defineBlocksWithJsonArray([
             {
-                "type": "duckyscript_payload",
-                "message0": "Payload Start",
-                "nextStatement": null,
-                "colour": 125,
-                "tooltip": "The starting block for a payload",
-            },
-            {
-                "type": "duckyscript_rem",
-                "message0": "REM %1",
+                "type": "type_string",
+                "message0": "Type %1",
                 "args0": [
                     {
-                        "type": "field_input",
-                        "name": "REM_TEXT",
-                        "text": ""
-                    }
-                ],
-                "previousStatement": null,
-                "nextStatement": null,
-                "colour": 555,
-                "tooltip": "Add a comment",
-                "helpUrl": "https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference#rem"
-            },
-            {
-                "type": "duckyscript_delay",
-                "message0": "Wait %1 seconds",
-                "args0": [
-                    {
-                        "type": "field_number",
-                        "name": "DELAY_TIME",
-                        "value": 1,
-                        "min": 0,
-                        "precision": 0.001
-                    }
-                ],
-                "previousStatement": null,
-                "nextStatement": null,
-                "colour": 0,
-                "tooltip": "Delay for a specified amount of time (in milliseconds)",
-                "helpUrl": "https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference#delay"
-            },
-            {
-                "type": "duckyscript_string",
-                "message0": "Write %1",
-                "args0": [
-                    {
-                        "type": "field_input",
-                        "name": "STRING_TEXT",
-                        "text": ""
+                        "type": "input_value",
+                        "name": "STRING",
+                        "check": "String"
                     }
                 ],
                 "previousStatement": null,
                 "nextStatement": null,
                 "colour": 230,
-                "tooltip": "Type a string of text",
-                "helpUrl": "https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference#string"
+                "tooltip": "Types the given string",
+                "helpUrl": ""
             },
             {
-                "type": "duckyscript_modifier",
-                "message0": "Modifier %1 %2",
+                "type": "delay",
+                "message0": "Delay %1 ms",
                 "args0": [
                     {
-                        "type": "field_dropdown",
-                        "name": "MODIFIER",
-                        "options": [
-                            [
-                                "CTRL",
-                                "CTRL"
-                            ],
-                            [
-                                "ALT",
-                                "ALT"
-                            ],
-                            [
-                                "SHIFT",
-                                "SHIFT"
-                            ],
-                            [
-                                "GUI",
-                                "GUI"
-                            ]
-                        ]
-                    },
-                    {
-                        "type": "input_value",
-                        "name": "INPUT"
+                        "type": "field_number",
+                        "name": "MS",
+                        "value": 100,
+                        "min": 0
                     }
                 ],
                 "previousStatement": null,
                 "nextStatement": null,
-                "output": true,
-                "colour": 260,
-                "tooltip": "Add a modifier to the next key",
-                "helpUrl": "https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference#basic-modifier-keys"
+                "colour": 230,
+                "tooltip": "Pauses the script for the given number of milliseconds",
+                "helpUrl": ""
             },
             {
-                "type": "duckyscript_key",
-                "message0": "Key %1",
+                "type": "press_key",
+                "message0": "Press %1",
                 "args0": [
                     {
                         "type": "field_dropdown",
                         "name": "KEY",
                         "options": [
-                            ["A", "a"],
-                            ["B", "b"],
-                            ["C", "c"],
-                            ["D", "d"],
-                            ["E", "e"],
-                            ["F", "f"],
-                            ["G", "g"],
-                            ["H", "h"],
-                            ["I", "i"],
-                            ["J", "j"],
-                            ["K", "k"],
-                            ["L", "l"],
-                            ["M", "m"],
-                            ["N", "n"],
-                            ["O", "o"],
-                            ["P", "p"],
-                            ["Q", "q"],
-                            ["R", "r"],
-                            ["S", "s"],
-                            ["T", "t"],
-                            ["U", "u"],
-                            ["V", "v"],
-                            ["W", "w"],
-                            ["X", "x"],
-                            ["Y", "y"],
-                            ["Z", "z"]
-                        ]
-                    }
-                ],
-                "output": true,
-                "colour": 230,
-                "tooltip": "Add a key to the modifier",
-                "helpUrl": "https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference#basic-modifier-keys"
-            },
-            {
-                "type": "duckyscript_f_key",
-                "message0": "F%1",
-                "args0": [
-                    {
-                        "type": "field_dropdown",
-                        "name": "F_KEY",
-                        "options": [
-                            ["1", "1"],
-                            ["2", "2"],
-                            ["3", "3"],
-                            ["4", "4"],
-                            ["5", "5"],
-                            ["6", "6"],
-                            ["7", "7"],
-                            ["8", "8"],
-                            ["9", "9"],
-                            ["10", "10"],
-                            ["11", "11"],
-                            ["12", "12"]
+                            ["ENTER", "ENTER"],
+                            ["ESC", "ESC"],
+                            ["TAB", "TAB"],
+                            ["SHIFT", "SHIFT"],
+                            ["ALT", "ALT"],
+                            ["CTRL", "CTRL"],
+                            ["DELETE", "DELETE"],
+                            ["HOME", "HOME"],
+                            ["END", "END"],
+                            ["PAGE_UP", "PAGE_UP"],
+                            ["PAGE_DOWN", "PAGE_DOWN"],
+                            ["UP", "UP"],
+                            ["DOWN", "DOWN"],
+                            ["LEFT", "LEFT"],
+                            ["RIGHT", "RIGHT"]
                         ]
                     }
                 ],
                 "previousStatement": null,
                 "nextStatement": null,
-                "output": true,
                 "colour": 230,
-                "tooltip": "Add a function key to the modifier",
-                "helpUrl": "https://docs.hak5.org/hak5-usb-rubber-ducky/duckyscript-tm-quick-reference#basic-modifier-keys"
+                "tooltip": "Presses the given key",
+                "helpUrl": ""
+            },
+            {
+                "type": "repeat",
+                "message0": "Repeat %1 times %2",
+                "args0": [
+                    {
+                        "type": "field_number",
+                        "name": "TIMES",
+                        "value": 2,
+                        "min": 1
+                    },
+                    {
+                        "type": "input_statement",
+                        "name": "COMMANDS"
+                    }
+                ],
+                "previousStatement": null,
+                "nextStatement": null,
+                "colour": 230,
+                "tooltip": "Repeats the given set of commands the specified number of times",
+                "helpUrl": ""
+            },
+            {
+                "type": "command_separator",
+                "message0": "%1 %2",
+                "args0": [
+                    {
+                        "type": "input_value",
+                        "name": "COMMAND_1",
+                        "check": ["Command", "null"]
+                    },
+                    {
+                        "type": "input_value",
+                        "name": "COMMAND_2",
+                        "check": ["Command", "null"]
+                    }
+                ],
+                "inputsInline": true,
+                "output": "Command",
+                "colour": 230,
+                "tooltip": "Executes two commands in sequence",
+                "helpUrl": ""
             }
-
         ]);
 
-        const workspace = Blockly.inject(blocklyDiv,
-            { toolbox: toolbox });
+        function getCode() {
+            var code = '';
+            var workspaceBlocks = workspace.getTopBlocks();
+            for (var i = 0; i < workspaceBlocks.length; i++) {
+                var block = workspaceBlocks[i];
+                var functionName = block.getFieldValue('NAME');
+                switch (functionName) {
+                    case 'STRING':
+                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                        code += text + '\n';
+                        break;
+                    case 'DELAY':
+                        var time = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                        code += 'DELAY ' + time + '\n';
+                        break;
+                    case 'REPEAT':
+                        var count = Blockly.JavaScript.valueToCode(block, 'TIMES', Blockly.JavaScript.ORDER_ATOMIC);
+                        var repeatCode = getCodeFromBlocks(block.getChildren());
+                        code += 'REPEAT ' + count + ' {\n' + repeatCode + '}\n';
+                        break;
+                    case 'TYPE':
+                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                        code += 'TYPE ' + text + '\n';
+                        break;
+                    case 'PRESS':
+                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                        code += 'PRESS ' + text + '\n';
+                        break;
+                    case 'RELEASE':
+                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                        code += 'RELEASE ' + text + '\n';
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return code;
+        }
+
+        function getCodeFromBlocks(blocks) {
+            var code = '';
+            for (var i = 0; i < blocks.length; i++) {
+                var block = blocks[i];
+                var functionName = block.getFieldValue('NAME');
+                switch (functionName) {
+                    case 'STRING':
+                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                        code += text + '\n';
+                        break;
+                    case 'DELAY':
+                        var time = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                        code += 'DELAY ' + time + '\n';
+                        break;
+                    case 'TYPE':
+                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                        code += 'TYPE ' + text + '\n';
+                        break;
+                    case 'PRESS':
+                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                        code += 'PRESS ' + text + '\n';
+                        break;
+                    case 'RELEASE':
+                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                        code += 'RELEASE ' + text + '\n';
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return code;
+        }
+
+
+
+        function exportToDuckyscript() {
+            var code = Blockly.Duckyscript.workspaceToCode(workspace);
+            var blob = new Blob([code], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, "payload.txt");
+        }
+
+        var workspace = Blockly.inject(blocklyDiv,
+            {
+                toolbox: toolbox,
+                trashcan: true,
+                grid:
+                {
+                    spacing: 20,
+                    length: 3,
+                    colour: '#ccc',
+                    snap: true
+                },
+                scrollbars: true
+            });
+
         const onresize = function (e) {
             let element = blocklyArea;
             let x = 0;
@@ -287,90 +318,8 @@
         };
         window.addEventListener('resize', onresize, false);
         onresize();
-
-
-        var startBlocks = {
-            "blocks": {
-                "languageVersion": 0,
-                "blocks": [
-                ]
-            }
-        }
-        Blockly.serialization.workspaces.load(startBlocks, workspace);
-
-        function exportToDuckyscript() {
-            // const blocks = workspace.getAllBlocks();
-            let duckyScript = '';
-            // for (let i = 0; i < blocks.length; i++) {
-            //     if (blocks[i].type == 'duckyscript_delay') {
-            //         duckyScript += exportDuckyscriptDelay(blocks[i]);
-            //     } else if (blocks[i].type == 'duckyscript_string') {
-            //         duckyScript += exportDuckyscriptString(blocks[i]);
-            //     } else if (blocks[i].type == 'duckyscript_rem') {
-            //         duckyScript += exportDuckyscriptRem(blocks[i]);
-            //     } else if (blocks[i].type == 'duckyscript_modifier') {
-            //         duckyScript += exportDuckyscriptModifier(blocks[i]);
-            //     } else if (blocks[i].type == 'duckyscript_key') {
-            //         duckyScript += exportDuckyscriptKey(blocks[i]);
-            //     } else if (blocks[i].type == 'duckyscript_f_key') {
-            //         duckyScript += exportDuckyscriptFKey(blocks[i]);
-            //     }
-            // }
-            const blocks = workspace.getAllBlocks();
-            for (let i = 0; i < blocks.length; i++) {
-                let currentBlock = blocks[i];
-                while (currentBlock) {
-                    if (currentBlock.type == 'duckyscript_delay') {
-                        duckyScript += exportDuckyscriptDelay(currentBlock);
-                    } else if (currentBlock.type == 'duckyscript_string') {
-                        duckyScript += exportDuckyscriptString(currentBlock);
-                    } else if (currentBlock.type == 'duckyscript_rem') {
-                        duckyScript += exportDuckyscriptRem(currentBlock);
-                    } else if (currentBlock.type == 'duckyscript_modifier') {
-                        duckyScript += exportDuckyscriptModifier(currentBlock);
-                    } else if (currentBlock.type == 'duckyscript_key') {
-                        duckyScript += exportDuckyscriptKey(currentBlock);
-                    } else if (currentBlock.type == 'duckyscript_f_key') {
-                        duckyScript += exportDuckyscriptFKey(currentBlock);
-                    }
-                    currentBlock = currentBlock.getNextBlock();
-                }
-            }
-            console.log(duckyScript);
-        }
-
-        function exportDuckyscriptRem(block) {
-            const text = block.getFieldValue('REM_TEXT');
-            return `REM ${text}\n`;
-        }
-
-        function exportDuckyscriptDelay(block) {
-            const delayTime = block.getFieldValue('DELAY_TIME');
-            return `DELAY ${delayTime * 1000};\n`;
-        }
-
-        function exportDuckyscriptString(block) {
-            const text = block.getFieldValue('STRING_TEXT');
-            return `STRING ${text}\n`;
-        }
-
-        // function to export modifiers and their keys
-        function exportDuckyscriptModifier(block) {
-            const modifier = block.getFieldValue('MODIFIER');
-            return `${modifier} `;
-        }
-
-        function exportDuckyscriptKey(block) {
-            const key = block.getFieldValue('KEY');
-            return `${key}\n`;
-        }
-
-        function exportDuckyscriptFKey(block) {
-            const fKey = block.getFieldValue('F_KEY');
-            return `F${fKey}\n`;
-        }
-
     </script>
+
 
 </body>
 
