@@ -27,6 +27,7 @@
     <title>PiKey Blocks</title>
     <script src="https://unpkg.com/blockly/blockly.min.js"></script>
     <script src="https://unpkg.com/blockly/javascript_compressed.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
 </head>
 <style>
     :root {
@@ -72,7 +73,7 @@
 </style>
 
 <body>
-    <button onclick="exportToDuckyscript">Export</button>
+    <button onclick="exportToDuckyscript()">Export</button>
     <table>
         <tr>
             <td id="blocklyArea">
@@ -87,13 +88,12 @@
         const blocklyDiv = document.getElementById('blocklyDiv');
         var toolbox = `
         <xml xmlns="https://developers.google.com/blockly/xml">
-            <category name="DuckyScript" colour="#5C81A6">
-                <block type="type_string"></block>
-                <block type="delay"></block>
-                <block type="repeat"></block>
-                <block type="press_key"></block>
-                <block type="command_separator"></block>
-            </category>
+            <block type="payload"></block>
+            <block type="type_string"></block>
+            <block type="delay"></block>
+            <block type="repeat"></block>
+            <block type="press_key"></block>
+            <block type="var"></block>
         </xml>
         `;
 
@@ -103,7 +103,7 @@
                 "message0": "Type %1",
                 "args0": [
                     {
-                        "type": "input_value",
+                        "type": "field_input",
                         "name": "STRING",
                         "check": "String"
                     }
@@ -185,92 +185,65 @@
                 "helpUrl": ""
             },
             {
-                "type": "command_separator",
-                "message0": "%1 %2",
+                "type": "var",
+                "message0": "VAR %1 = %2",
                 "args0": [
                     {
-                        "type": "input_value",
-                        "name": "COMMAND_1",
-                        "check": ["Command", "null"]
+                        "type": "field_input",
+                        "name": "VAR_NAME",
+                        "text": "i"
                     },
                     {
-                        "type": "input_value",
-                        "name": "COMMAND_2",
-                        "check": ["Command", "null"]
+                        "type": "field_number",
+                        "name": "VAR_VALUE",
+                        "value": 0,
+                        "min": 0
                     }
                 ],
-                "inputsInline": true,
-                "output": "Command",
+                "previousStatement": null,
+                "nextStatement": null,
                 "colour": 230,
-                "tooltip": "Executes two commands in sequence",
+                "tooltip": "Creates a variable with the given name and value",
                 "helpUrl": ""
+            },
+            {
+                "type": "payload",
+                "message0": "Payload",
+                "style": "hat_blocks",
+                "nextStatement": null,
+                "tooltip": "The starting block for the payload",
             }
         ]);
-
-        function getCode() {
-            var code = '';
-            var workspaceBlocks = workspace.getTopBlocks();
-            for (var i = 0; i < workspaceBlocks.length; i++) {
-                var block = workspaceBlocks[i];
-                var functionName = block.getFieldValue('NAME');
-                switch (functionName) {
-                    case 'STRING':
-                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-                        code += text + '\n';
-                        break;
-                    case 'DELAY':
-                        var time = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-                        code += 'DELAY ' + time + '\n';
-                        break;
-                    case 'REPEAT':
-                        var count = Blockly.JavaScript.valueToCode(block, 'TIMES', Blockly.JavaScript.ORDER_ATOMIC);
-                        var repeatCode = getCodeFromBlocks(block.getChildren());
-                        code += 'REPEAT ' + count + ' {\n' + repeatCode + '}\n';
-                        break;
-                    case 'TYPE':
-                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-                        code += 'TYPE ' + text + '\n';
-                        break;
-                    case 'PRESS':
-                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-                        code += 'PRESS ' + text + '\n';
-                        break;
-                    case 'RELEASE':
-                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-                        code += 'RELEASE ' + text + '\n';
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return code;
-        }
 
         function getCodeFromBlocks(blocks) {
             var code = '';
             for (var i = 0; i < blocks.length; i++) {
                 var block = blocks[i];
-                var functionName = block.getFieldValue('NAME');
+                var functionName = block['type'];
                 switch (functionName) {
-                    case 'STRING':
-                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-                        code += text + '\n';
+                    case 'type_string':
+                        var text = block.getFieldValue('STRING');
+                        code += 'STRING ' + text + '\n';
                         break;
-                    case 'DELAY':
-                        var time = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                    case 'delay':
+                        var time = block.getFieldValue('MS');
                         code += 'DELAY ' + time + '\n';
                         break;
-                    case 'TYPE':
-                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-                        code += 'TYPE ' + text + '\n';
-                        break;
-                    case 'PRESS':
-                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
+                    case 'press_key':
+                        var text = block.getFieldValue('KEY');
                         code += 'PRESS ' + text + '\n';
                         break;
-                    case 'RELEASE':
-                        var text = Blockly.JavaScript.valueToCode(block, 'VALUE', Blockly.JavaScript.ORDER_ATOMIC);
-                        code += 'RELEASE ' + text + '\n';
+                    case 'repeat':
+                        var times = block.getFieldValue('TIMES');
+                        var commands = block.getInputTargetBlock('COMMANDS');
+                        var commandsCode = getCodeFromBlocks(commands.getDescendants());
+                        code += `VAR $i = 0\nWHILE ( $i < ${times} ) \n` + commandsCode + '$i = ($1 + 1)\nEND_WHILE\n';
+                        i += commands.getDescendants().length;
+                        break;
+                    case 'var':
+                        var name = block.getFieldValue('VAR_NAME');
+                        var value = block.getFieldValue('VAR_VALUE');
+                        code += `VAR $${name} = ${value}\n`;
                         break;
                     default:
                         break;
@@ -279,17 +252,16 @@
             return code;
         }
 
-
-
         function exportToDuckyscript() {
-            var code = Blockly.Duckyscript.workspaceToCode(workspace);
+            var code = getCodeFromBlocks(workspace.getAllBlocks());
             var blob = new Blob([code], { type: "text/plain;charset=utf-8" });
-            saveAs(blob, "payload.txt");
+            saveAs(blob, "payload.dd");
         }
 
         var workspace = Blockly.inject(blocklyDiv,
             {
                 toolbox: toolbox,
+                sounds: false,
                 trashcan: true,
                 grid:
                 {
