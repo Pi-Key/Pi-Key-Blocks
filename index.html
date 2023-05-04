@@ -93,6 +93,8 @@
             <block type="delay"></block>
             <block type="repeat"></block>
             <block type="press_key"></block>
+            <block type="press_letter_key"></block>
+            <block type="press_f_key"></block>
             <block type="var"></block>
         </xml>
         `;
@@ -133,7 +135,7 @@
             },
             {
                 "type": "press_key",
-                "message0": "Press %1",
+                "message0": "Press %1 %2",
                 "args0": [
                     {
                         "type": "field_dropdown",
@@ -153,12 +155,88 @@
                             ["UP", "UP"],
                             ["DOWN", "DOWN"],
                             ["LEFT", "LEFT"],
-                            ["RIGHT", "RIGHT"]
+                            ["RIGHT", "RIGHT"],
                         ]
+                    },
+                    {
+                        "type": "input_value",
+                        "name": "INPUT"
                     }
                 ],
                 "previousStatement": null,
                 "nextStatement": null,
+                "output": true,
+                "colour": 230,
+                "tooltip": "Presses the given key",
+                "helpUrl": ""
+            },
+            {
+                "type": "press_letter_key",
+                "message0": "Press letter %1 %2",
+                "args0": [
+                    {
+                        "type": "field_dropdown",
+                        "name": "KEY",
+                        "options": [
+                            ["A", "A"],
+                            ["B", "B"],
+                            ["C", "C"],
+                            ["D", "D"],
+                            ["E", "E"],
+                            ["F", "F"],
+                            ["G", "G"],
+                            ["H", "H"],
+                            ["I", "I"],
+                            ["J", "J"],
+                            ["K", "K"],
+                            ["L", "L"],
+                            ["M", "M"],
+                            ["N", "N"],
+                            ["O", "O"],
+                            ["P", "P"],
+                            ["Q", "Q"],
+                            ["R", "R"],
+                            ["S", "S"],
+                            ["T", "T"],
+                            ["U", "U"],
+                            ["V", "V"],
+                            ["W", "W"],
+                            ["X", "X"],
+                            ["Y", "Y"],
+                            ["Z", "Z"]
+                        ]
+                    },
+                    {
+                        "type": "input_value",
+                        "name": "INPUT"
+                    }
+                ],
+                "previousStatement": null,
+                "nextStatement": null,
+                "output": true,
+                "colour": 230,
+                "tooltip": "Presses the given key",
+                "helpUrl": ""
+            },
+            {
+                "type": "press_f_key",
+                "message0": "Press F%1 %2",
+                "args0": [
+                    {
+                        "type": "field_number",
+                        "name": "FKEY_NUM",
+                        "value": 1,
+                        "min": 1,
+                        "max": 24
+                    },
+                    {
+                        "type": "input_value",
+                        "name": "INPUT"
+                    }
+                ],
+                "previousStatement": null,
+                "nextStatement": null,
+                "output": true,
                 "colour": 230,
                 "tooltip": "Presses the given key",
                 "helpUrl": ""
@@ -229,9 +307,28 @@
                         var time = block.getFieldValue('MS');
                         code += 'DELAY ' + time + '\n';
                         break;
+                    case 'press_letter_key':
                     case 'press_key':
                         var text = block.getFieldValue('KEY');
-                        code += 'PRESS ' + text + '\n';
+                        code += text + ' ';
+                        var input = block.getInputTargetBlock('INPUT');
+                        if (input) {
+                            var inputCode = getCodeFromBlocks(input.getDescendants());
+                            code += inputCode;
+                            i += input.getDescendants().length;
+                        }
+                        code += '\n'
+                        break;
+                    case 'press_f_key':
+                        var num = block.getFieldValue('FKEY_NUM');
+                        code += 'F' + num + ' ';
+                        var input = block.getInputTargetBlock('INPUT');
+                        if (input) {
+                            var inputCode = getCodeFromBlocks(input.getDescendants());
+                            code += inputCode;
+                            i += input.getDescendants().length;
+                        }
+                        code += '\n'
                         break;
                     case 'repeat':
                         var times = block.getFieldValue('TIMES');
